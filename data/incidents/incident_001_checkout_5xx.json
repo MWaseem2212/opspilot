@@ -1,0 +1,13 @@
+{
+  "alert_id": "ALT-1001",
+  "service": "checkout-api",
+  "error_signature": "5xx spike on /checkout/complete",
+  "timestamp": "2026-08-15T02:14:00Z",
+  "severity": "high",
+  "scenario_description": "checkout-api ka error rate deployment ke 10 minute baad achanak barh gaya. Recent deployment mein payment-timeout config change kiya gaya tha.",
+  "ground_truth": {
+    "likely_cause": "recent deployment changed payment timeout threshold, causing premature timeouts under load",
+    "expected_severity": "high",
+    "correct_action": "rollback recent deployment"
+  }
+}
