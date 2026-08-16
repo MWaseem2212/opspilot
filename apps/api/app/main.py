@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from app.schemas.incident import IncidentAlert
 from app.tools.metrics import get_service_metrics
 from app.tools.logs import search_logs
+from app.tools.deployments import get_recent_deployments
 
 app = FastAPI(title="OpsPilot API")
 
@@ -24,3 +25,7 @@ def read_service_metrics(service: str):
 @app.get("/tools/logs/{service}")
 def read_service_logs(service: str, level: str = "ERROR"):
     return search_logs(service, level)
+
+@app.get("/tools/deployments/{service}")
+def read_recent_deployments(service: str):
+    return get_recent_deployments(service)
