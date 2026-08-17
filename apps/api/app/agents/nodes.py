@@ -3,6 +3,7 @@ from app.tools.metrics import get_service_metrics
 from app.tools.logs import search_logs
 from app.tools.deployments import get_recent_deployments
 from app.services.llm import get_llm
+from app.schemas.incident import IncidentAnalysis
 
 def fetch_metrics(state: IncidentState) -> IncidentState:
     """
@@ -34,11 +35,13 @@ def fetch_deployments(state: IncidentState) -> IncidentState:
 
 def generate_summary(state: IncidentState) -> IncidentState:
     """
-    Node: uses the LLM to analyze gathered evidence and produce
-    a grounded incident summary with likely cause and recommended action.
+    Node: uses the LLM with structured output to analyze evidence
+    and produce a typed, machine-readable incident analysis.
     """
 
     llm = get_llm()
+
+    structured_llm = llm.with_structured_output(IncidentAnalysis)
 
     prompt = f"""You are an SRE incident analysis assistant. Analyze the evidence below
         and produce a concise summary.
@@ -62,9 +65,9 @@ def generate_summary(state: IncidentState) -> IncidentState:
         Do not speculate beyond what the evidence shows. If evidence is insufficient, say so.
         """
 
-    response = llm.invoke(prompt)
+    analysis: IncidentAnalysis = structured_llm.invoke(prompt)
 
-    return {"summary": response.content}
+    return {"summary": analysis.model_dump()}
 
     # metrics = state.get("metrics", {})
     # logs = state.get("logs", [])
