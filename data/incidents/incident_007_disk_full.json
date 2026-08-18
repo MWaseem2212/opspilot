@@ -1,0 +1,13 @@
+{
+  "alert_id": "ALT-1007",
+  "service": "logging-service",
+  "error_signature": "Write failures due to disk usage at 98%",
+  "timestamp": "2026-08-17T07:55:00Z",
+  "severity": "high",
+  "scenario_description": "logging-service ki disk usage 98% pe pohanch gayi hai, log writes fail ho rahe hain. Koi recent deployment nahi, lekin log retention/cleanup job kaafi din se disabled tha.",
+  "ground_truth": {
+    "likely_cause": "log rotation/cleanup job was disabled weeks ago, causing gradual disk fill-up",
+    "expected_severity": "high",
+    "correct_action": "manually clear old logs immediately, then re-enable the log rotation job"
+  }
+}

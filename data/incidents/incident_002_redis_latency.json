@@ -1,0 +1,13 @@
+{
+  "alert_id": "ALT-1002",
+  "service": "catalog-api",
+  "error_signature": "High p95 latency on /catalog/search",
+  "timestamp": "2026-08-16T09:30:00Z",
+  "severity": "medium",
+  "scenario_description": "catalog-api ki response time achanak 5x barh gayi. Koi recent deployment nahi hua. Redis cache hit rate girna shuru hua.",
+  "ground_truth": {
+    "likely_cause": "Redis cache experiencing high memory pressure, causing eviction and cache misses, pushing load to primary database",
+    "expected_severity": "medium",
+    "correct_action": "scale Redis memory or investigate cache eviction policy"
+  }
+}

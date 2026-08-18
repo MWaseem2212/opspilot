@@ -1,0 +1,13 @@
+{
+  "alert_id": "ALT-1004",
+  "service": "orders-api",
+  "error_signature": "\"connection pool exhausted\" errors on /orders/create",
+  "timestamp": "2026-08-16T18:20:00Z",
+  "severity": "high",
+  "scenario_description": "orders-api database connection pool khatam ho gaya. Traffic normal hai, lekin ek naya background job recently deploy hua hai jo connections release nahi kar raha.",
+  "ground_truth": {
+    "likely_cause": "newly deployed background job holding database connections without releasing them, exhausting the pool",
+    "expected_severity": "high",
+    "correct_action": "rollback the background job deployment or restart affected pods"
+  }
+}

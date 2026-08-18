@@ -1,0 +1,13 @@
+{
+  "alert_id": "ALT-1005",
+  "service": "notification-worker",
+  "error_signature": "Gradual memory growth leading to OOM restarts",
+  "timestamp": "2026-08-16T22:40:00Z",
+  "severity": "medium",
+  "scenario_description": "notification-worker ka memory usage pichle 6 ghante mein steadily barh raha hai, restart cycle shuru ho gaye hain.",
+  "ground_truth": {
+    "likely_cause": "memory leak introduced by a recent code change that retains references to processed notification objects",
+    "expected_severity": "medium",
+    "correct_action": "rollback recent deployment; if not recent, schedule investigation and use scheduled restarts as temporary mitigation"
+  }
+}

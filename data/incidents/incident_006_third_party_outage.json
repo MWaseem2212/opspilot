@@ -1,0 +1,13 @@
+{
+  "alert_id": "ALT-1006",
+  "service": "payment-worker",
+  "error_signature": "All payment gateway calls timing out",
+  "timestamp": "2026-08-17T03:10:00Z",
+  "severity": "critical",
+  "scenario_description": "payment-worker ke saare external payment gateway calls timeout ho rahe hain. Hamare deployment history mein koi recent change nahi. Gateway ka status page bhi outage dikha raha hai.",
+  "ground_truth": {
+    "likely_cause": "third-party payment gateway provider experiencing an outage, unrelated to our own deployments",
+    "expected_severity": "critical",
+    "correct_action": "no rollback needed; enable fallback payment provider or queue transactions for retry, notify stakeholders of external dependency"
+  }
+}

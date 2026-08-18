@@ -1,0 +1,13 @@
+{
+  "alert_id": "ALT-1003",
+  "service": "auth-service",
+  "error_signature": "100% failure rate on /auth/login",
+  "timestamp": "2026-08-16T14:05:00Z",
+  "severity": "critical",
+  "scenario_description": "auth-service completely unavailable. Health check endpoint bhi fail ho raha hai. Users login nahi kar pa rahe.",
+  "ground_truth": {
+    "likely_cause": "auth-service pods crashed after a bad deployment introduced a startup error",
+    "expected_severity": "critical",
+    "correct_action": "immediate rollback to last known good deployment"
+  }
+}
