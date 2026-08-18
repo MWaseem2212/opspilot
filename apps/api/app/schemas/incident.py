@@ -20,4 +20,5 @@ class IncidentAnalysis(BaseModel):
     severity: Severity = Field(description="Assessed severity based on the evidence")
     recommended_action: str = Field(description="One clear, actionable next step")
     confidence: str = Field(description="One of: low, medium, high - how confident the analysis is given the evidence")
+    requires_approval: bool = Field(description="True if the recommended action would change system state (rollback, restart, scale, config change). False if the action is informational or read-only only.")
     
