@@ -38,36 +38,37 @@ def generate_summary(state: IncidentState) -> IncidentState:
     Node: uses the LLM with structured output to analyze evidence
     and produce a typed, machine-readable incident analysis.
     """
-
     llm = get_llm()
-
     structured_llm = llm.with_structured_output(IncidentAnalysis)
 
-    prompt = f"""You are an SRE incident analysis assistant. Analyze the evidence below
-        and produce a concise summary.
+    prompt = f"""You are an SRE incident analysis assistant. Analyze the evidence below.
 
-        Incident: {state['error_signature']} on service '{state['service']}'
+Incident: {state['error_signature']} on service '{state['service']}'
 
-        Metrics:
-        {state.get('metrics')}
+Metrics:
+{state.get('metrics')}
 
-        Error Logs:
-        {state.get('logs')}
+Error Logs:
+{state.get('logs')}
 
-        Recent Deployments:
-        {state.get('deployments')}
+Recent Deployments:
+{state.get('deployments')}
 
-        Based ONLY on the evidence above, provide:
-        1. Likely root cause (one sentence)
-        2. Severity assessment (low/medium/high/critical)
-        3. Recommended next action (one sentence)
+Based ONLY on the evidence above, analyze the incident. Do not speculate beyond
+what the evidence shows. If evidence is insufficient, reflect that in your
+confidence level.
 
-        Do not speculate beyond what the evidence shows. If evidence is insufficient, say so.
-        """
+For requires_approval: set to True if your recommended action would change
+system state (e.g. rollback a deployment, restart a service, scale resources,
+change configuration). Set to False if the action is purely informational
+(e.g. "investigate further", "gather more data", "monitor").
+"""
 
     analysis: IncidentAnalysis = structured_llm.invoke(prompt)
 
     return {"summary": analysis.model_dump()}
+
+
 
     # metrics = state.get("metrics", {})
     # logs = state.get("logs", [])

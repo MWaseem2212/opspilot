@@ -36,3 +36,4 @@ for file_path in incident_files:
     print(f"  Severity: {result['summary']['severity']}")
     print(f"  Action: {result['summary']['recommended_action']}")
     print(f"  Confidence: {result['summary']['confidence']}")
+    print(f"  Requires Approval: {result['summary']['requires_approval']}")
