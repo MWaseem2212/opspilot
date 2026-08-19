@@ -65,17 +65,19 @@ python scripts/run_evaluation.py
 
 ## Project Structure
 
+```
 opspilot/
 ├── apps/
-│ ├── api/ # FastAPI backend, LangGraph agent, tools
-│ └── web/ # Next.js dashboard
+│   ├── api/        # FastAPI backend, LangGraph agent, tools
+│   └── web/         # Next.js dashboard
 ├── data/
-│ ├── incidents/ # Simulated incident scenarios
-│ ├── runbooks/ # Matching runbooks for RAG-style reference
-│ └── evaluation_report.json
+│   ├── incidents/    # Simulated incident scenarios
+│   ├── runbooks/      # Matching runbooks for RAG-style reference
+│   └── evaluation_report.json
 ├── scripts/
-│ ├── test_graph.py
-│ └── run_evaluation.py
+│   ├── test_graph.py
+│   └── run_evaluation.py
+```
 
 
 ## Known Limitations & Next Steps
