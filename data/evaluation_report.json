@@ -1,0 +1,78 @@
+{
+  "run_at": "2026-08-19T11:37:51.496055+00:00",
+  "total_scenarios": 7,
+  "cause_accuracy_percent": 100.0,
+  "severity_accuracy_percent": 57.1,
+  "results": [
+    {
+      "alert_id": "ALT-1001",
+      "service": "checkout-api",
+      "cause_correct": true,
+      "severity_correct": true,
+      "agent_cause": "The recent deployment reduced the payment gateway timeout from 5000ms to 3000ms, causing gateway timeouts that resulted in a spike of 5xx errors on /checkout/complete.",
+      "ground_truth_cause": "recent deployment changed payment timeout threshold, causing premature timeouts under load",
+      "agent_severity": "high",
+      "ground_truth_severity": "high"
+    },
+    {
+      "alert_id": "ALT-1002",
+      "service": "catalog-api",
+      "cause_correct": true,
+      "severity_correct": false,
+      "agent_cause": "The low cache hit rate (41%) suggests that many requests are hitting the database or slower backend, causing the high p95 latency. No error logs or recent deployments point to a configuration or resource issue rather than a code bug.",
+      "ground_truth_cause": "Redis cache experiencing high memory pressure, causing eviction and cache misses, pushing load to primary database",
+      "agent_severity": "high",
+      "ground_truth_severity": "medium"
+    },
+    {
+      "alert_id": "ALT-1003",
+      "service": "auth-service",
+      "cause_correct": true,
+      "severity_correct": true,
+      "agent_cause": "The recent deployment (DEP-4502) updated the auth token validation module, which introduced a startup error causing the readiness probe to fail and the pod to enter a crash loop. This prevented any /auth/login requests from being processed, resulting in a 100% error rate.",
+      "ground_truth_cause": "auth-service pods crashed after a bad deployment introduced a startup error",
+      "agent_severity": "critical",
+      "ground_truth_severity": "critical"
+    },
+    {
+      "alert_id": "ALT-1004",
+      "service": "orders-api",
+      "cause_correct": true,
+      "severity_correct": true,
+      "agent_cause": "The deployment of the new background job order-reconciliation-worker increased database connection usage, causing the connection pool to reach its maximum (100 connections) and exhaust it during /orders/create requests.",
+      "ground_truth_cause": "newly deployed background job holding database connections without releasing them, exhausting the pool",
+      "agent_severity": "high",
+      "ground_truth_severity": "high"
+    },
+    {
+      "alert_id": "ALT-1005",
+      "service": "notification-worker",
+      "cause_correct": true,
+      "severity_correct": false,
+      "agent_cause": "The refactor in deployment DEP-4530 introduced a memory leak in the notification object processing pipeline, causing memory usage to grow gradually and trigger OOM restarts.",
+      "ground_truth_cause": "memory leak introduced by a recent code change that retains references to processed notification objects",
+      "agent_severity": "high",
+      "ground_truth_severity": "medium"
+    },
+    {
+      "alert_id": "ALT-1006",
+      "service": "payment-worker",
+      "cause_correct": true,
+      "severity_correct": false,
+      "agent_cause": "The payment-worker service is timing out when connecting to the external payment gateway, likely due to an upstream timeout or connectivity issue.",
+      "ground_truth_cause": "third-party payment gateway provider experiencing an outage, unrelated to our own deployments",
+      "agent_severity": "high",
+      "ground_truth_severity": "critical"
+    },
+    {
+      "alert_id": "ALT-1007",
+      "service": "logging-service",
+      "cause_correct": true,
+      "severity_correct": true,
+      "agent_cause": "Disk usage at 98% caused write failures due to no space left on device",
+      "ground_truth_cause": "log rotation/cleanup job was disabled weeks ago, causing gradual disk fill-up",
+      "agent_severity": "high",
+      "ground_truth_severity": "high"
+    }
+  ]
+}
