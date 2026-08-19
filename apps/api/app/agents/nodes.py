@@ -70,30 +70,4 @@ change configuration). Set to False if the action is purely informational
 
 
 
-    # metrics = state.get("metrics", {})
-    # logs = state.get("logs", [])
-    # deployments = state.get("deployments", [])
-
-    # summary_parts = []
-
-    # if metrics:
-    #     summary_parts.append(
-    #         f"Error rate is {metrics.get('error_rate_percent')}% "
-    #         f"with p95 latency {metrics.get('p95_latency_ms')}ms."
-    #     )
-
-    # if logs:
-    #     summary_parts.append(f"Found {len(logs)} error log entries.")
-
-    # if deployments:
-    #     latest = deployments[0]
-    #     summary_parts.append(
-    #         f"Recent deployment {latest['deployment_id']}: {latest['change_summary']}."
-
-    #     )
-    # else:
-    #     summary_parts.append("No recent deployments found for this service.")
-
-    # summary_text = " ".join(summary_parts)
-
-    # return {"summary": summary_text}
+    

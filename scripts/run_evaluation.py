@@ -2,6 +2,7 @@ import json
 import sys
 import os
 import glob
+import time
 from datetime import datetime, timezone
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "apps", "api"))
@@ -14,6 +15,20 @@ graph = build_incident_graph()
 llm = get_llm()
 
 results = []
+
+
+def invoke_with_retry(graph, state, max_retries=3):
+    """
+    Calls the graph, retrying on transient LLM/API failures.
+    """
+    for attempt in range(max_retries):
+        try:
+            return graph.invoke(state)
+        except Exception as e:
+            if attempt == max_retries - 1:
+                raise
+            print(f"  Retry {attempt + 1}/{max_retries} after error: {e}")
+            time.sleep(2)
 
 
 def judge_cause_match(agent_cause: str, ground_truth_cause: str) -> bool:
@@ -48,7 +63,7 @@ for file_path in incident_files:
         "summary": None,
     }
 
-    result = graph.invoke(initial_state)
+    result = invoke_with_retry(graph, initial_state)
     analysis = result["summary"]
     ground_truth = incident_data["ground_truth"]
 

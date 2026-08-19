@@ -24,25 +24,6 @@ incident_graph = build_incident_graph()
 def health_check():
     return {"status": "ok", "service": "opspilot-api"}
 
-# @app.post("/incidents")
-# def receive_incident(incident: IncidentAlert):
-#     return {
-#         "message": "Incident received",
-#         "alert_id": incident.alert_id,
-#         "severity": incident.severity,
-#     }
-
-# @app.get("/tools/metrics/{service}")
-# def read_service_metrics(service: str):
-#     return get_service_metrics(service)
-
-# @app.get("/tools/logs/{service}")
-# def read_service_logs(service: str, level: str = "ERROR"):
-#     return search_logs(service, level)
-
-# @app.get("/tools/deployments/{service}")
-# def read_recent_deployments(service: str):
-#     return get_recent_deployments(service)
 
 @app.post("/incidents/analyze")
 def analyze_incident(incident: IncidentAlert):
