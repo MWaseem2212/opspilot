@@ -5,9 +5,11 @@ from app.tools.logs import search_logs
 from app.tools.deployments import get_recent_deployments
 from app.agents.graph import build_incident_graph
 from app.services.store import save_record, get_record, list_records
+
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title="OpsPilot API")
+incident_graph = build_incident_graph()
 
 app.add_middleware(
     CORSMiddleware,
