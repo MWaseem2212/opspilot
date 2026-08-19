@@ -1,0 +1,78 @@
+{
+  "run_at": "2026-08-19T11:00:44.116643",
+  "total_scenarios": 7,
+  "cause_accuracy_percent": 100.0,
+  "severity_accuracy_percent": 57.1,
+  "results": [
+    {
+      "alert_id": "ALT-1001",
+      "service": "checkout-api",
+      "cause_correct": true,
+      "severity_correct": true,
+      "agent_cause": "The recent deployment reduced the payment gateway timeout to 3000ms, causing the gateway to time out and return 5xx errors on /checkout/complete.",
+      "ground_truth_cause": "recent deployment changed payment timeout threshold, causing premature timeouts under load",
+      "agent_severity": "high",
+      "ground_truth_severity": "high"
+    },
+    {
+      "alert_id": "ALT-1002",
+      "service": "catalog-api",
+      "cause_correct": true,
+      "severity_correct": false,
+      "agent_cause": "Low cache hit rate is causing high latency on /catalog/search.",
+      "ground_truth_cause": "Redis cache experiencing high memory pressure, causing eviction and cache misses, pushing load to primary database",
+      "agent_severity": "high",
+      "ground_truth_severity": "medium"
+    },
+    {
+      "alert_id": "ALT-1003",
+      "service": "auth-service",
+      "cause_correct": true,
+      "severity_correct": true,
+      "agent_cause": "The deployment DEP-4502 updated the auth token validation module, which introduced a startup error causing the auth-service pod to fail readiness probes and enter a crash loop, resulting in 100% failure rate on /auth/login.",
+      "ground_truth_cause": "auth-service pods crashed after a bad deployment introduced a startup error",
+      "agent_severity": "critical",
+      "ground_truth_severity": "critical"
+    },
+    {
+      "alert_id": "ALT-1004",
+      "service": "orders-api",
+      "cause_correct": true,
+      "severity_correct": true,
+      "agent_cause": "The new order\u2011reconciliation\u2011worker deployed at 18:00\u202fZ on 16\u202fAug started consuming all available database connections, exhausting the pool and causing the observed errors.",
+      "ground_truth_cause": "newly deployed background job holding database connections without releasing them, exhausting the pool",
+      "agent_severity": "high",
+      "ground_truth_severity": "high"
+    },
+    {
+      "alert_id": "ALT-1005",
+      "service": "notification-worker",
+      "cause_correct": true,
+      "severity_correct": false,
+      "agent_cause": "The recent deployment DEP-4530 refactored the notification object processing pipeline, likely introducing a memory leak that causes gradual memory growth and OOM restarts.",
+      "ground_truth_cause": "memory leak introduced by a recent code change that retains references to processed notification objects",
+      "agent_severity": "high",
+      "ground_truth_severity": "medium"
+    },
+    {
+      "alert_id": "ALT-1006",
+      "service": "payment-worker",
+      "cause_correct": true,
+      "severity_correct": false,
+      "agent_cause": "External payment gateway is timing out, causing all calls to fail",
+      "ground_truth_cause": "third-party payment gateway provider experiencing an outage, unrelated to our own deployments",
+      "agent_severity": "medium",
+      "ground_truth_severity": "critical"
+    },
+    {
+      "alert_id": "ALT-1007",
+      "service": "logging-service",
+      "cause_correct": true,
+      "severity_correct": true,
+      "agent_cause": "The disk on the logging-service node reached 98% usage, causing write operations to fail with \u201cno space left on device\u201d errors.",
+      "ground_truth_cause": "log rotation/cleanup job was disabled weeks ago, causing gradual disk fill-up",
+      "agent_severity": "high",
+      "ground_truth_severity": "high"
+    }
+  ]
+}
