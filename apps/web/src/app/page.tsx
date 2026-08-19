@@ -1,69 +1,195 @@
-import Image from "next/image";
+"use client";
+
+import { useEffect, useState } from "react";
+
+type IncidentRecord = {
+  record_id: string;
+  alert_id: string;
+  service: string;
+  analysis: {
+    likely_cause: string;
+    severity: string;
+    recommended_action: string;
+    confidence: string;
+    requires_approval: boolean;
+  };
+  approval_status: string;
+};
+
+const SEVERITY_STYLES: Record<string, { border: string; text: string; dot: string }> = {
+  critical: { border: "border-l-rose-500", text: "text-rose-400", dot: "bg-rose-500" },
+  high: { border: "border-l-orange-500", text: "text-orange-400", dot: "bg-orange-500" },
+  medium: { border: "border-l-amber-500", text: "text-amber-400", dot: "bg-amber-500" },
+  low: { border: "border-l-sky-500", text: "text-sky-400", dot: "bg-sky-500" },
+};
+
+const STATUS_STYLES: Record<string, string> = {
+  pending: "bg-amber-500/10 text-amber-400 border-amber-500/30",
+  approved: "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
+  rejected: "bg-rose-500/10 text-rose-400 border-rose-500/30",
+  not_required: "bg-gray-500/10 text-gray-400 border-gray-500/30",
+};
 
 export default function Home() {
+  const [incidents, setIncidents] = useState<IncidentRecord[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const loadIncidents = () => {
+    fetch("http://127.0.0.1:8000/incidents")
+      .then((res) => res.json())
+      .then((data) => {
+        setIncidents(data);
+        setLoading(false);
+      });
+  };
+
+  useEffect(() => {
+    loadIncidents();
+  }, []);
+
+  const handleApprove = async (recordId: string) => {
+    const res = await fetch(`http://127.0.0.1:8000/incidents/${recordId}/approve`, {
+      method: "POST",
+    });
+    const updated = await res.json();
+    setIncidents((prev) => prev.map((i) => (i.record_id === recordId ? updated : i)));
+  };
+
+  const handleReject = async (recordId: string) => {
+    const res = await fetch(`http://127.0.0.1:8000/incidents/${recordId}/reject`, {
+      method: "POST",
+    });
+    const updated = await res.json();
+    setIncidents((prev) => prev.map((i) => (i.record_id === recordId ? updated : i)));
+  };
+
+  const pendingCount = incidents.filter((i) => i.approval_status === "pending").length;
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <main className="min-h-screen">
+      {/* Top bar */}
+      <header className="border-b border-gray-800/80 bg-[#0D1117]/80 backdrop-blur sticky top-0 z-10">
+        <div className="max-w-4xl mx-auto px-6 py-5 flex items-center justify-between">
+          <div>
+            <h1 className="font-[family-name:var(--font-mono)] text-xl font-bold tracking-tight text-white">
+              OpsPilot
+            </h1>
+            <p className="text-sm text-gray-500 mt-0.5">
+              Agentic SRE Incident Triage & Response Copilot
+            </p>
+          </div>
+          <div className="flex items-center gap-2 text-sm">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            </span>
+            <span className="text-gray-500">Live</span>
+          </div>
+        </div>
+      </header>
+
+      <div className="max-w-4xl mx-auto px-6 py-8">
+        {/* Stats row */}
+        <div className="grid grid-cols-3 gap-4 mb-8">
+          <div className="bg-[#0D1117] border border-gray-800/80 rounded-lg p-4">
+            <p className="text-xs text-gray-500 uppercase tracking-wide font-[family-name:var(--font-mono)]">
+              Total Incidents
+            </p>
+            <p className="text-2xl font-semibold text-white mt-1">{incidents.length}</p>
+          </div>
+          <div className="bg-[#0D1117] border border-gray-800/80 rounded-lg p-4">
+            <p className="text-xs text-gray-500 uppercase tracking-wide font-[family-name:var(--font-mono)]">
+              Pending Approval
+            </p>
+            <p className="text-2xl font-semibold text-amber-400 mt-1">{pendingCount}</p>
+          </div>
+          <div className="bg-[#0D1117] border border-gray-800/80 rounded-lg p-4">
+            <p className="text-xs text-gray-500 uppercase tracking-wide font-[family-name:var(--font-mono)]">
+              Resolved
+            </p>
+            <p className="text-2xl font-semibold text-emerald-400 mt-1">
+              {incidents.length - pendingCount}
+            </p>
+          </div>
+        </div>
+
+        {/* Incident list */}
+        {loading && (
+          <p className="text-gray-500 font-[family-name:var(--font-mono)] text-sm">
+            Loading incidents...
           </p>
+        )}
+
+        {!loading && incidents.length === 0 && (
+          <div className="border border-dashed border-gray-800 rounded-lg p-10 text-center">
+            <p className="text-gray-500">No incidents reported.</p>
+            <p className="text-gray-600 text-sm mt-1">
+              New alerts will appear here for triage.
+            </p>
+          </div>
+        )}
+
+        <div className="space-y-4">
+          {incidents.map((incident) => {
+            const sev = SEVERITY_STYLES[incident.analysis.severity] ?? SEVERITY_STYLES.low;
+            const statusStyle = STATUS_STYLES[incident.approval_status] ?? STATUS_STYLES.not_required;
+
+            return (
+              <div
+                key={incident.record_id}
+                className={`bg-[#0D1117] border border-gray-800/80 border-l-4 ${sev.border} rounded-lg p-5`}
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <div className="flex items-center gap-3">
+                      <h2 className="font-[family-name:var(--font-mono)] font-semibold text-white">
+                        {incident.alert_id}
+                      </h2>
+                      <span className="text-gray-600">·</span>
+                      <span className="font-[family-name:var(--font-mono)] text-sm text-gray-400">
+                        {incident.service}
+                      </span>
+                      <span className={`text-xs font-medium uppercase tracking-wide ${sev.text}`}>
+                        {incident.analysis.severity}
+                      </span>
+                    </div>
+                    <p className="text-gray-300 mt-2 text-sm leading-relaxed">
+                      {incident.analysis.likely_cause}
+                    </p>
+                    <p className="text-gray-500 mt-2 text-sm">
+                      <span className="text-gray-600">Recommended:</span>{" "}
+                      {incident.analysis.recommended_action}
+                    </p>
+                  </div>
+
+                  <span
+                    className={`shrink-0 text-xs font-medium px-2.5 py-1 rounded-full border ${statusStyle} capitalize font-[family-name:var(--font-mono)]`}
+                  >
+                    {incident.approval_status.replace("_", " ")}
+                  </span>
+                </div>
+
+                {incident.approval_status === "pending" && (
+                  <div className="flex gap-2 mt-4 pt-4 border-t border-gray-800/60">
+                    <button
+                      onClick={() => handleApprove(incident.record_id)}
+                      className="bg-emerald-600/90 hover:bg-emerald-500 text-white px-4 py-1.5 rounded-md text-sm font-medium transition-colors"
+                    >
+                      Approve
+                    </button>
+                    <button
+                      onClick={() => handleReject(incident.record_id)}
+                      className="bg-transparent hover:bg-rose-500/10 text-rose-400 border border-rose-500/30 px-4 py-1.5 rounded-md text-sm font-medium transition-colors"
+                    >
+                      Reject
+                    </button>
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+      </div>
+    </main>
   );
 }
